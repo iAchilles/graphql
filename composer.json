@@ -1,5 +1,5 @@
 {
-  "name":              "webonyx/graphql-php",
+  "name":              "iachilles/graphql",
   "description":       "A PHP port of GraphQL reference implementation",
   "type":              "library",
   "license":           "MIT",
