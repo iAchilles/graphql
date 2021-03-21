@@ -297,6 +297,7 @@ EOD;
                     return [
                         'kind'          => [
                             'type'    => Type::nonNull(self::_typeKind()),
+
                             'resolve' => static function (Type $type) {
                                 switch (true) {
                                     case $type instanceof ListOfType:
@@ -522,6 +523,24 @@ EOD;
                                 return $field->deprecationReason;
                             },
                         ],
+                        'metadata' => [
+                            'type' => self::_metadata(),
+                            'resolve' => static function (FieldDefinition $field) {
+                                if (isset($field->config[ 'metadata' ])) {
+                                    return [
+                                        'note' => isset($field->config[ 'metadata' ][ 'note' ])
+                                            ? $field->config[ 'metadata' ][ 'note' ] : null,
+                                        'module' => isset($field->config[ 'metadata' ][ 'module' ])
+                                            ? $field->config[ 'metadata' ][ 'module' ] : null,
+                                        'submodule' => isset($field->config[ 'metadata' ][ 'submodule' ])
+                                            ? $field->config[ 'metadata' ][ 'submodule' ] : null,
+                                        'isAuthRequired' => isset($field->config[ 'metadata' ][ 'isAuthRequired' ])
+                                            ? $field->config[ 'metadata' ][ 'isAuthRequired' ] : false
+                                    ];
+                                }
+                                return null;
+                            }
+                        ]
                     ];
                 },
             ]);
@@ -529,6 +548,36 @@ EOD;
 
         return self::$map['__Field'];
     }
+
+    public static function _metadata()
+    {
+        if (! isset(self::$map['__Metadata'])) {
+            self::$map['__Metadata'] = new ObjectType([
+                'name'            => '__Metadata',
+                'isIntrospection' => true,
+                'description'     => 'An additional information for documentation purposes.',
+                'fields'          => static function () {
+                    return [
+                        'module'              => [
+                            'type' => Type::string()
+                        ],
+                        'submodule'       => [
+                            'type' => Type::string()
+                        ],
+                        'isAuthRequired'              => [
+                            'type' => Type::nonNull(Type::boolean())
+                        ],
+                        'note'       => [
+                            'type' => Type::string()
+                        ]
+                    ];
+                },
+            ]);
+        }
+
+        return self::$map['__Metadata'];
+    }
+
 
     public static function _inputValue()
     {
